@@ -2,12 +2,23 @@ import Student from "../models/student.js";
 
 export const getStudent = async (req, res) => {
     try {
-        const students = await Student.find().sort({ createdAt: -1 }); // Use 'await' to execute the query
-        res.status(200).json(students); // Send the retrieved documents
-    } catch (error) {
-        console.error("Error fetching students:", error);
-        res.status(500).json({ message: error.message });
-    }
+    const { search = '' } = req.query;
+    const query = search
+      ? {
+          $or: [
+            { name: { $regex: search, $options: 'i' } },
+            { course: { $regex: search, $options: 'i' } },
+            { stream: { $regex: search, $options: 'i' } },
+          ],
+        }
+      : {};
+
+    const students = await Student.find(query).sort({ createdAt: -1 });
+    res.status(200).json(students);
+  } catch (error) {
+    console.error('Error fetching students:', error);
+    res.status(500).json({ message: error.message });
+  }
 };
 
 export const getTargetStudent = async (req,res) => {

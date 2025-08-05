@@ -1,20 +1,24 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import Stlist from '../components/Stlist'
 import api from "../lib/axios.js";
 import toast from 'react-hot-toast';
+import { debounce } from 'lodash';
 
 const Home = () => {
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
 
-    const fetchStudents = async () =>{
+    const fetchStudents = async (query = '') =>{
     try {
-        const res = await api.get('/student');
+        const res = await api.get('/student', {
+        params: { search: query },
+      });
         console.log(res.data);
         setStudents(res.data);
-        toast.success("Load Student Data!");
+        toast.success(query ? 'Search results loaded!' : 'Student data loaded!');
     } catch (error) {
         console.log("Error fetching studentData")
         toast.error("Error Loading student!");
@@ -23,9 +27,17 @@ const Home = () => {
         setLoading(false);
     }
     };
+    
+    const debouncedSearch = useCallback(
+    debounce((value) => {
+      setSearchQuery(value);
+    }, 300),
+    []
+  );
+
     useEffect(() =>{
-    fetchStudents();
-    },[])
+    fetchStudents(searchQuery);
+    },[searchQuery])
 
     const handleDelete = async (id) => {
       if (!window.confirm("Are you sure you want to delete this student?")) return;
@@ -41,7 +53,7 @@ const Home = () => {
 
   return (
     <div>
-      <Navbar />
+      <Navbar onSearch={debouncedSearch} />
       <div className='flex items-center justify-center p-5'>
         <p className='text-2xl font-bold'>Student List</p>
       </div>
