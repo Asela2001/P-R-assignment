@@ -4,7 +4,7 @@ import { TiArrowBackOutline } from "react-icons/ti";
 import {Link, useNavigate} from "react-router-dom"
 import toast from 'react-hot-toast';
 
-const create = () => {
+const Create = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [telephone, setTelephone] = useState("");
@@ -14,6 +14,15 @@ const create = () => {
   const [loading, SetLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  const streamOptions = ['Maths', 'Science', 'Tech', 'Commerce', 'Art'];
+  const courseOptions = {
+    Maths: ['Chemistry', 'Physics', 'Combined Maths', 'ICT'],
+    Science: ['Chemistry', 'Physics', 'Bilogy', 'Agree'],
+    Tech: ['ET', 'BST', 'SFT', 'ICT', 'Agriculture'],
+    Commerce: ['Accounting', 'Economics', 'Business Studies', 'ICT'],
+    Art: ['History', 'Geography', 'Literature', 'ICT', 'Agree']
+  };
 
   const createStudent = async (e) => {
     e.preventDefault();
@@ -41,6 +50,7 @@ const create = () => {
       SetLoading(false);
     }
   }
+
 
   return (
     <div>
@@ -71,15 +81,33 @@ const create = () => {
           <label className='block text-sm font-medium text-gray-700 mb-1'>
             Stream
           </label>
-          <input type='text' className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={(e) => setStream(e.target.value)} value={stream} />
+          <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={(e) => {
+                setStream(e.target.value);
+                setCourse(''); // Reset course when stream changes
+              }} value={stream} >
+                {streamOptions.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
           <label className='block text-sm font-medium text-gray-700 mb-1'>
             Course
           </label>
-          <input type='text' className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={(e) => setCourse(e.target.value)} value={course} />
+          <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={(e) => setCourse(e.target.value)} value={course} disabled={!stream} >
+            <option value="">Select Course</option>
+              {stream && courseOptions[stream]?.map((courseOption) => (
+                <option key={courseOption} value={courseOption}>
+                  {courseOption}
+                </option>
+              ))}
+            </select>
           <label className='block text-sm font-medium text-gray-700 mb-1'>
             Grade
           </label>
-          <input type='number' min="12" max="13" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={(e) => setGrade(e.target.value)} value={grade} />
+          <select min="12" max="13" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={(e) => setGrade(e.target.value)} value={grade} >
+            <option value="">Select Grade</option>
+            <option value="12">Grade 12</option>
+              <option value="13">Grade 13</option>
+            </select>
           <button type='submit' className='w-full px-2 py-2 mt-5 border border-gray-300 rounded-md bg-blue-400 text-white cursor-pointer' disabled={loading} >{loading ? 'Adding Student...' : 'Add Student'}</button>
         </form>
         
@@ -89,4 +117,4 @@ const create = () => {
   )
 }
 
-export default create
+export default Create
